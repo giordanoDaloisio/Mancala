@@ -1,10 +1,11 @@
-__author__ = "giordanodaloisio"
-
 from copy import deepcopy
+
+__author__ = "giordanodaloisio"
 
 
 class MancalaState:
 
+    # each state is defined by the board, the parent, the player playing next and the points of both the players
     def __init__(self, board, next_player=None, parent=None):
         self.board = board
         self.parent = parent
@@ -18,7 +19,7 @@ class MancalaState:
             return self.board[6]
 
     @property
-    def opponent_points(self):
+    def ai_points(self):
         if self.no_moves():
             return sum(self.board[7:14])
         else:
@@ -27,11 +28,12 @@ class MancalaState:
     def print(self):
         print("  ", end="")
         print(*["%2d" % x for x in reversed(self.board[7:13])], sep="|")
-        print("%2d                  %2d" % (self.opponent_points, self.player_points))
+        print("%2d                  %2d" % (self.ai_points, self.player_points))
         print("  ", end="")
         print(*["%2d" % x for x in self.board[0:6]], sep="|")
 
     def no_moves(self):
+        # check if a player as no more moves
         return any(self.board[0:6]) == 0 or any(self.board[7:13]) == 0
 
     def make_move(self, cell, player):
@@ -53,11 +55,15 @@ class MancalaState:
                     new_board[pos] += 1
                 new_board[cell] = 0
                 # check if player has another turn
-                if (player == 1 and pos == 6) or (player == 7 and pos == 13):
+                if (player == 0 and pos == 6) or (player == 7 and pos == 13):
                     next_player = player
                 else:
                     next_player = 7 - player
                 return MancalaState(new_board, next_player, self)
+
+    def get_next_player(self):
+        # return the value of the next player
+        return self.next_player
 
 
 class MancalaGame:
@@ -68,17 +74,27 @@ class MancalaGame:
     def make_move(self, cell, player):
         new_state = self.state.make_move(cell, player)
         self.state = new_state
-        return self.state.next_player
 
     def neighbors(self, player):
         out = set([])
         state = self.state
         for cell in range(0, 6):
-            out.add(state.make_move(cell, player))
+            new_state = state.make_move(cell, player)
+            if new_state is not None:
+                out.add(new_state)
         return out
 
+    def no_moves(self):
+        return self.state.no_moves()
+
+    def winner(self):
+        return self.state.player_points > self.state.ai_points
 
 
 
-
-
+# board = [4 for i in range(0, 6)]
+# board += [0]
+# board += [4 for i in range(0,6)]
+# board += [0]
+# mancala = MancalaGame(board)
+# print(mancala.make_move(3, 0))

@@ -1,10 +1,5 @@
 __author__ = "giordanodaloisio"
 
 
-class Heuristic:
-
-    def __init__(self):
-        pass
-
-    def h1(self, state):
-        return state.player_points - state.opponent_points
+def h1(state, player):
+    return state.ai_points - state.player_points - abs(player-state.next_player)

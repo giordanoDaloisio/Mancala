@@ -1,42 +1,43 @@
 from Game import MancalaGame
-from Heuristics import Heuristic
+import Heuristics
 
 MIN = 0
 MAX = 7
 
 
-def minmax(game, state, player):
+def minmax(game, state, player, depth=10):
     beststate = None
 
-    if state.complete():
-        return h.heuristic(state, MAX), state
+    if depth == 0 or state.no_moves():
+        return Heuristics.h1(state), state
 
     if player is MAX:
         currval = float('-inf')
-        for node in game.neighbors(state, MAX):
-            val, state = minmax(game, node, MIN)
+        for node in game.neighbors(MAX):
+            val, state = minmax(game, node, MIN, depth-1)
             if val > currval:
                 currval = val
                 beststate = node
+        return currval, beststate
 
     if player is MIN:
         currval = float('inf')
-        for node in game.neighbors(state, MIN):
-            val, state = minmax(game, node, MAX)
+        for node in game.neighbors(MIN):
+            val, state = minmax(game, node, MAX, depth-1)
             if val < currval:
                 currval = val
                 beststate = node
-    return currval, beststate
+        return currval, beststate
 
 
-def alpha_beta(game, state, player, alpha=float('-inf'), beta=float('inf')):
+def alpha_beta(game, state, player, alpha=float('-inf'), beta=float('inf'), depth=15):
     beststate = state
-    if state.complete():
-        return h.heuristic(state, MAX), state
+    if state.no_moves() or depth == 0:
+        return Heuristics.h1(state), state
     if player is MAX:
         currval = float('-inf')
-        for node in game.neighbors(state, player):
-            val, state = alpha_beta(game, node, MIN, alpha, beta)
+        for node in game.neighbors(player):
+            val, state = alpha_beta(game, node, MIN, alpha, beta, depth-1)
             alpha = max(alpha, val)
             if val > currval:
                 currval = val
@@ -46,8 +47,8 @@ def alpha_beta(game, state, player, alpha=float('-inf'), beta=float('inf')):
         return currval, beststate
     if player is MIN:
         currval = float('inf')
-        for node in game.neighbors(state, player):
-            val, state = alpha_beta(game, node, MAX, alpha, beta)
+        for node in game.neighbors(player):
+            val, state = alpha_beta(game, node, MAX, alpha, beta, depth-1)
             beta = min(beta, val)
             if val < currval:
                 currval = val
@@ -55,3 +56,38 @@ def alpha_beta(game, state, player, alpha=float('-inf'), beta=float('inf')):
             if alpha >= beta:
                 break
         return currval, beststate
+
+def choose_move():
+    move = -1
+    while int(move) not in range(0, 6):
+        move = input("Select a cell to pickup [0-5]")
+    return int(move)
+
+
+def man_vs_ai(game):
+    game.state.print()
+    move = choose_move()
+    player = game.make_move(move, MIN)
+    game.state.print()
+    while not game.no_moves():
+        if player is MAX:
+            val, move = alpha_beta(game, game.state, MAX)
+            game.state = move
+            print("Value: "+str(val))
+        elif player is MIN:
+            move = choose_move()
+            game.make_move(move, player)
+        game.state.print()
+        player = game.state.get_next_player()
+    if game.winner():
+        print("Hai vinto")
+    else:
+        print("Hai perso")
+
+
+board = [4 for i in range(0, 6)]
+board += [0]
+board += [4 for i in range(0, 6)]
+board += [0]
+mancala = MancalaGame(board)
+man_vs_ai(mancala)
