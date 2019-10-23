@@ -12,20 +12,23 @@ class MancalaState:
         self.next_player = next_player
 
     def __str__(self):
-        ris = "AI board: "
-        for x in reversed(self.board[7:13]):
-            ris += "%2d" % x
-            ris += "|"
-        ris += '\n'
-        ris += "AI Mancala: %s" % self.ai_points
-        ris += '\n'
-        ris += "Player board: "
-        for x in self.board[0:6]:
-            ris += "%2d" % x
-            ris += "|"
-        ris += '\n'
-        ris += 'Player Mancala: %s  ' % self.player_points
-        ris += 'Next player: %s' % self.next_player
+        # ris = "AI board: "
+        # for x in reversed(self.board[7:13]):
+        #     ris += "%2d" % x
+        #     ris += "|"
+        # ris += '\n'
+        # ris += "AI Mancala: %s" % self.ai_points
+        # ris += '\n'
+        # ris += "Player board: "
+        # for x in self.board[0:6]:
+        #     ris += "%2d" % x
+        #     ris += "|"
+        # ris += '\n'
+        # ris += 'Player Mancala: %s  ' % self.player_points
+        # ris += 'Next player: %s' % self.next_player
+        ris = "| "
+        for cell in self.board:
+            ris += str(cell) + " | "
         return ris
 
     def __repr__(self):
@@ -57,7 +60,6 @@ class MancalaState:
             return sum(self.board[7:14])
         else:
             return self.board[13]
-
 
     def print(self):
         print("  ", end="")
@@ -105,9 +107,8 @@ class MancalaGame:
         new_state = self.state.make_move(cell, player)
         self.state = new_state
 
-    def neighbors(self, player):
+    def neighbors(self, state, player):
         out = set([])
-        state = self.state
         for cell in range(0, 6):
             new_state = state.make_move(cell, player)
             if new_state is not None:
