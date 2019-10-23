@@ -12,39 +12,9 @@ class MancalaState:
         self.next_player = next_player
 
     def __str__(self):
-        # ris = "AI board: "
-        # for x in reversed(self.board[7:13]):
-        #     ris += "%2d" % x
-        #     ris += "|"
-        # ris += '\n'
-        # ris += "AI Mancala: %s" % self.ai_points
-        # ris += '\n'
-        # ris += "Player board: "
-        # for x in self.board[0:6]:
-        #     ris += "%2d" % x
-        #     ris += "|"
-        # ris += '\n'
-        # ris += 'Player Mancala: %s  ' % self.player_points
-        # ris += 'Next player: %s' % self.next_player
         ris = "| "
         for cell in self.board:
             ris += str(cell) + " | "
-        return ris
-
-    def __repr__(self):
-        ris = "AI board: "
-        for x in reversed(self.board[7:13]):
-            ris += "%2d" % x
-            ris += "|"
-        ris += '\n'
-        ris = "AI Mancala: %s" % self.ai_points
-        ris += '\n'
-        ris += "Player board: "
-        for x in self.board[0:6]:
-            ris += "%2d" % x
-            ris += "|"
-        ris += '\n'
-        ris += 'Player Mancala: %s' % self.player_points
         return ris
 
     @property

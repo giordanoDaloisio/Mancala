@@ -69,18 +69,17 @@ def man_vs_ai(game):
     game.state.print()
     move = choose_move()
     game.make_move(move, MIN)
-    player = MAX
+    player = game.get_next_player()
     while not game.no_moves():
         game.state.print()
         if player is MAX:
             val, move = alpha_beta(game, game.state, MAX)
             game.state = move
-            player = MIN
             print("Value: "+str(val))
         elif player is MIN:
             move = choose_move()
             game.make_move(move, player)
-            player = MAX
+        player = game.get_next_player()
     if game.winner():
         print("Hai vinto")
     else:
@@ -91,16 +90,13 @@ def ai_vs_ai(game):
     game.state.print()
     val, move = alpha_beta(game, game.state, MIN)
     game.state = move
-    player = MAX
+    player = game.get_next_player()
     while not game.no_moves():
         print("Value: " + str(val))
         game.state.print()
         val, move = alpha_beta(game, game.state, player)
         game.state = move
-        if player is MAX:
-            player = MIN
-        elif player is MIN:
-            player = MAX
+        player = game.get_next_player()
     if game.winner():
         print("Ha vinto MIN")
     else:
@@ -112,5 +108,5 @@ board += [0]
 board += [4 for i in range(0, 6)]
 board += [0]
 mancala = MancalaGame(board)
-#man_vs_ai(mancala)
-ai_vs_ai(mancala)
+man_vs_ai(mancala)
+#ai_vs_ai(mancala)
