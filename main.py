@@ -9,7 +9,7 @@ def minmax(game, state, player, depth=10):
     beststate = None
 
     if depth == 0 or state.no_moves():
-        return Heuristics.h1(state), state
+        return Heuristics.h1(state, player), state
 
     if player is MAX:
         currval = float('-inf')
@@ -30,10 +30,10 @@ def minmax(game, state, player, depth=10):
         return currval, beststate
 
 
-def alpha_beta(game, state, player, alpha=float('-inf'), beta=float('inf'), depth=15):
+def alpha_beta(game, state, player, alpha=float('-inf'), beta=float('inf'), depth=10):
     beststate = state
     if state.no_moves() or depth == 0:
-        return Heuristics.h1(state), state
+        return Heuristics.h1(state, player), state
     if player is MAX:
         currval = float('-inf')
         for node in game.neighbors(player):
@@ -57,18 +57,18 @@ def alpha_beta(game, state, player, alpha=float('-inf'), beta=float('inf'), dept
                 break
         return currval, beststate
 
+
 def choose_move():
     move = -1
-    while int(move) not in range(0, 6):
-        move = input("Select a cell to pickup [0-5]")
-    return int(move)
+    while int(move) not in range(1, 7):
+        move = input("Select a cell to pickup [1-6]")
+    return int(move)-1
 
 
 def man_vs_ai(game):
     game.state.print()
     move = choose_move()
     player = game.make_move(move, MIN)
-    game.state.print()
     while not game.no_moves():
         if player is MAX:
             val, move = alpha_beta(game, game.state, MAX)
@@ -78,7 +78,7 @@ def man_vs_ai(game):
             move = choose_move()
             game.make_move(move, player)
         game.state.print()
-        player = game.state.get_next_player()
+        player = game.get_next_player()
     if game.winner():
         print("Hai vinto")
     else:

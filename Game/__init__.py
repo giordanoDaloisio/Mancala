@@ -11,6 +11,39 @@ class MancalaState:
         self.parent = parent
         self.next_player = next_player
 
+    def __str__(self):
+        ris = "AI board: "
+        for x in reversed(self.board[7:13]):
+            ris += "%2d" % x
+            ris += "|"
+        ris += '\n'
+        ris += "AI Mancala: %s" % self.ai_points
+        ris += '\n'
+        ris += "Player board: "
+        for x in self.board[0:6]:
+            ris += "%2d" % x
+            ris += "|"
+        ris += '\n'
+        ris += 'Player Mancala: %s  ' % self.player_points
+        ris += 'Next player: %s' % self.next_player
+        return ris
+
+    def __repr__(self):
+        ris = "AI board: "
+        for x in reversed(self.board[7:13]):
+            ris += "%2d" % x
+            ris += "|"
+        ris += '\n'
+        ris = "AI Mancala: %s" % self.ai_points
+        ris += '\n'
+        ris += "Player board: "
+        for x in self.board[0:6]:
+            ris += "%2d" % x
+            ris += "|"
+        ris += '\n'
+        ris += 'Player Mancala: %s' % self.player_points
+        return ris
+
     @property
     def player_points(self):
         if self.no_moves():
@@ -25,6 +58,7 @@ class MancalaState:
         else:
             return self.board[13]
 
+
     def print(self):
         print("  ", end="")
         print(*["%2d" % x for x in reversed(self.board[7:13])], sep="|")
@@ -36,9 +70,8 @@ class MancalaState:
         # check if a player as no more moves
         return any(self.board[0:6]) == 0 or any(self.board[7:13]) == 0
 
-    def make_move(self, cell, player):
-        # returns a new state corresponding to moving the pots in the <cell> of the <player>
-
+    def make_move(self, cell, player):  # returns a new state corresponding to moving the pots in the <cell> of the
+        # <player>
         # check if cell is between 0 and 5 and player is valid one
         if cell in range(0, 6) and player in (0, 7):
             # compute the value of the cell for player 0 or 7
@@ -47,23 +80,20 @@ class MancalaState:
             if self.board[cell] > 0:
                 new_board = deepcopy(self.board)
                 # place pot in adjacent cells
-                pos = 0
-                for i in range(1, new_board[cell]+1):
-                    pos = cell + i
-                    if pos > 13:
-                        pos = 0
-                    new_board[pos] += 1
+                tokens = new_board[cell]
                 new_board[cell] = 0
+                while tokens > 0:
+                    cell += 1
+                    if cell > 13:
+                        cell = 0
+                    new_board[cell] += 1
+                    tokens -= 1
                 # check if player has another turn
-                if (player == 0 and pos == 6) or (player == 7 and pos == 13):
+                if (player == 0 and cell == 6) or (player == 7 and cell == 13):
                     next_player = player
                 else:
                     next_player = 7 - player
                 return MancalaState(new_board, next_player, self)
-
-    def get_next_player(self):
-        # return the value of the next player
-        return self.next_player
 
 
 class MancalaGame:
@@ -90,11 +120,15 @@ class MancalaGame:
     def winner(self):
         return self.state.player_points > self.state.ai_points
 
+    def get_next_player(self):
+        # return the value of the next player
+        return self.state.next_player
 
 
 # board = [4 for i in range(0, 6)]
 # board += [0]
-# board += [4 for i in range(0,6)]
+# board += [4 for i in range(0, 6)]
 # board += [0]
 # mancala = MancalaGame(board)
-# print(mancala.make_move(3, 0))
+# mancala.make_move(5, 7)
+# mancala.state.print()
