@@ -23,8 +23,10 @@ def minmax(state, player, depth=5):
 
     if player is MIN:
         currval = float('inf')
+
         for node in state.neighbors(MIN):
             val, state = minmax(node, MAX, depth-1)
+
             if val < currval:
                 currval = val
                 beststate = node
@@ -101,6 +103,27 @@ def ai_vs_ai_double_turn(game):
         val, move = alpha_beta(game.state, player)
         game.state = move
         player = game.get_next_player()
+        game.state.print()
+    if game.winner():
+        print("Ha vinto MIN")
+    else:
+        print("Ha vinto MAX")
+
+def ai_vs_ai(game):
+    game.state.print()
+    val, move = alpha_beta(game, game.state, MIN)
+    game.state = move
+    player = MAX
+    while not game.no_moves():
+        print("Value: " + str(val))
+        game.state.print()
+        val, move = alpha_beta(game, game.state, player)
+        game.state = move
+        if player is MAX:
+            player = MIN
+        elif player is MIN:
+            player = MAX
+    game.state.print()
     if game.winner():
         print("Ha vinto MIN")
     else:
@@ -114,3 +137,4 @@ board += [0]
 mancala = MancalaGame(board)
 man_vs_ai_double_turn(mancala)
 #ai_vs_ai(mancala)
+
