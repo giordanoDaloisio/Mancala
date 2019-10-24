@@ -91,6 +91,9 @@ class MancalaGame:
     def winner(self):
         return self.state.player_points > self.state.ai_points
 
+    def draw(self):
+        return self.state.player_points == self.state.ai_points
+
     def get_next_player(self):
         # return the value of the next player
         return self.state.next_player
