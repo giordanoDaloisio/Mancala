@@ -1,8 +1,10 @@
 from Game import MancalaGame
-import Heuristics
+from Heuristics import DoubleTurnHeuristic
 
 MIN = 0
 MAX = 7
+
+DOUBLE_TURN = DoubleTurnHeuristic(MAX, MIN)
 
 
 def minmax(state, player, depth=5):
@@ -64,7 +66,7 @@ def choose_move():
     return int(move)-1
 
 
-def man_vs_ai(game):
+def man_vs_ai_double_turn(game):
     game.state.print()
     move = choose_move()
     game.make_move(move, MIN)
@@ -72,20 +74,23 @@ def man_vs_ai(game):
     while not game.no_moves():
         game.state.print()
         if player is MAX:
-            val, move = alpha_beta(game.state, MAX)
+            val, move = DOUBLE_TURN.minmax(game.state, player)
             game.set_state(move)
             print("Value: "+str(val))
         elif player is MIN:
             move = choose_move()
             game.make_move(move, player)
         player = game.get_next_player()
+    game.state.print()
     if game.winner():
         print("Hai vinto")
+    elif game.draw():
+        print("Pareggio")
     else:
         print("Hai perso")
 
 
-def ai_vs_ai(game):
+def ai_vs_ai_double_turn(game):
     game.state.print()
     val, move = alpha_beta(game.state, MIN)
     game.state = move
@@ -107,5 +112,5 @@ board += [0]
 board += [4 for i in range(0, 6)]
 board += [0]
 mancala = MancalaGame(board)
-man_vs_ai(mancala)
+man_vs_ai_double_turn(mancala)
 #ai_vs_ai(mancala)
