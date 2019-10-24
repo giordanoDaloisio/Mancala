@@ -5,16 +5,15 @@ MIN = 0
 MAX = 7
 
 
-def minmax(game, state, player, depth=10):
+def minmax(state, player, depth=5):
     beststate = None
-
     if depth == 0 or state.no_moves():
         return Heuristics.h1(state), state
 
     if player is MAX:
         currval = float('-inf')
-        for node in game.neighbors(state, MAX):
-            val, state = minmax(game, node, MIN, depth-1)
+        for node in state.neighbors(MAX):
+            val, state = minmax(node, MIN, depth-1)
             if val > currval:
                 currval = val
                 beststate = node
@@ -22,22 +21,22 @@ def minmax(game, state, player, depth=10):
 
     if player is MIN:
         currval = float('inf')
-        for node in game.neighbors(state, MIN):
-            val, state = minmax(game, node, MAX, depth-1)
+        for node in state.neighbors(MIN):
+            val, state = minmax(node, MAX, depth-1)
             if val < currval:
                 currval = val
                 beststate = node
         return currval, beststate
 
 
-def alpha_beta(game, state, player, alpha=float('-inf'), beta=float('inf'), depth=10):
+def alpha_beta(state, player, alpha=float('-inf'), beta=float('inf'), depth=10):
     beststate = state
     if state.no_moves() or depth == 0:
         return Heuristics.h1(state), state
     if player is MAX:
         currval = float('-inf')
-        for node in game.neighbors(state, player):
-            val, state = alpha_beta(game, node, MIN, alpha, beta, depth-1)
+        for node in state.neighbors(player):
+            val, state = alpha_beta(node, MIN, alpha, beta, depth-1)
             alpha = max(alpha, val)
             if val > currval:
                 currval = val
@@ -47,8 +46,8 @@ def alpha_beta(game, state, player, alpha=float('-inf'), beta=float('inf'), dept
         return currval, beststate
     if player is MIN:
         currval = float('inf')
-        for node in game.neighbors(state, player):
-            val, state = alpha_beta(game, node, MAX, alpha, beta, depth-1)
+        for node in state.neighbors(player):
+            val, state = alpha_beta(node, MAX, alpha, beta, depth-1)
             beta = min(beta, val)
             if val < currval:
                 currval = val
@@ -73,8 +72,8 @@ def man_vs_ai(game):
     while not game.no_moves():
         game.state.print()
         if player is MAX:
-            val, move = alpha_beta(game, game.state, MAX)
-            game.state = move
+            val, move = alpha_beta(game.state, MAX)
+            game.set_state(move)
             print("Value: "+str(val))
         elif player is MIN:
             move = choose_move()
@@ -88,13 +87,13 @@ def man_vs_ai(game):
 
 def ai_vs_ai(game):
     game.state.print()
-    val, move = alpha_beta(game, game.state, MIN)
+    val, move = alpha_beta(game.state, MIN)
     game.state = move
     player = game.get_next_player()
     while not game.no_moves():
         print("Value: " + str(val))
         game.state.print()
-        val, move = alpha_beta(game, game.state, player)
+        val, move = alpha_beta(game.state, player)
         game.state = move
         player = game.get_next_player()
     if game.winner():

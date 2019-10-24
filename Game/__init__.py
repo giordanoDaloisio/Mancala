@@ -20,14 +20,14 @@ class MancalaState:
     @property
     def player_points(self):
         if self.no_moves():
-            return sum(self.board[0:7])
+            return sum(self.board[7:14])
         else:
             return self.board[6]
 
     @property
     def ai_points(self):
         if self.no_moves():
-            return sum(self.board[7:14])
+            return sum(self.board[0:7])
         else:
             return self.board[13]
 
@@ -67,6 +67,14 @@ class MancalaState:
                     next_player = 7 - player
                 return MancalaState(new_board, next_player, self)
 
+    def neighbors(self, player):
+        out = set([])
+        for cell in range(0, 6):
+            new_state = self.make_move(cell, player)
+            if new_state is not None:
+                out.add(new_state)
+        return out
+
 
 class MancalaGame:
 
@@ -76,14 +84,6 @@ class MancalaGame:
     def make_move(self, cell, player):
         new_state = self.state.make_move(cell, player)
         self.state = new_state
-
-    def neighbors(self, state, player):
-        out = set([])
-        for cell in range(0, 6):
-            new_state = state.make_move(cell, player)
-            if new_state is not None:
-                out.add(new_state)
-        return out
 
     def no_moves(self):
         return self.state.no_moves()
@@ -95,11 +95,5 @@ class MancalaGame:
         # return the value of the next player
         return self.state.next_player
 
-
-# board = [4 for i in range(0, 6)]
-# board += [0]
-# board += [4 for i in range(0, 6)]
-# board += [0]
-# mancala = MancalaGame(board)
-# mancala.make_move(5, 7)
-# mancala.state.print()
+    def set_state(self, state):
+        self.state = state
