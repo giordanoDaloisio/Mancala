@@ -81,8 +81,11 @@ def man_vs_ai(game):
             move = choose_move()
             game.make_move(move, player)
             player = MAX
+    game.state.print()
     if game.winner():
         print("Hai vinto")
+    elif game.draw():
+        print("Pareggio")
     else:
         print("Hai perso")
 
@@ -101,6 +104,7 @@ def ai_vs_ai(game):
             player = MIN
         elif player is MIN:
             player = MAX
+    game.state.print()
     if game.winner():
         print("Ha vinto MIN")
     else:
