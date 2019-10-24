@@ -12,52 +12,22 @@ class MancalaState:
         self.next_player = next_player
 
     def __str__(self):
-        # ris = "AI board: "
-        # for x in reversed(self.board[7:13]):
-        #     ris += "%2d" % x
-        #     ris += "|"
-        # ris += '\n'
-        # ris += "AI Mancala: %s" % self.ai_points
-        # ris += '\n'
-        # ris += "Player board: "
-        # for x in self.board[0:6]:
-        #     ris += "%2d" % x
-        #     ris += "|"
-        # ris += '\n'
-        # ris += 'Player Mancala: %s  ' % self.player_points
-        # ris += 'Next player: %s' % self.next_player
         ris = "| "
         for cell in self.board:
             ris += str(cell) + " | "
         return ris
 
-    def __repr__(self):
-        ris = "AI board: "
-        for x in reversed(self.board[7:13]):
-            ris += "%2d" % x
-            ris += "|"
-        ris += '\n'
-        ris = "AI Mancala: %s" % self.ai_points
-        ris += '\n'
-        ris += "Player board: "
-        for x in self.board[0:6]:
-            ris += "%2d" % x
-            ris += "|"
-        ris += '\n'
-        ris += 'Player Mancala: %s' % self.player_points
-        return ris
-
     @property
     def player_points(self):
         if self.no_moves():
-            return sum(self.board[0:7])
+            return sum(self.board[7:14])
         else:
             return self.board[6]
 
     @property
     def ai_points(self):
         if self.no_moves():
-            return sum(self.board[7:14])
+            return sum(self.board[0:7])
         else:
             return self.board[13]
 
@@ -124,12 +94,3 @@ class MancalaGame:
     def get_next_player(self):
         # return the value of the next player
         return self.state.next_player
-
-
-# board = [4 for i in range(0, 6)]
-# board += [0]
-# board += [4 for i in range(0, 6)]
-# board += [0]
-# mancala = MancalaGame(board)
-# mancala.make_move(5, 7)
-# mancala.state.print()

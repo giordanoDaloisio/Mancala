@@ -112,5 +112,5 @@ board += [0]
 board += [4 for i in range(0, 6)]
 board += [0]
 mancala = MancalaGame(board)
-#man_vs_ai(mancala)
-ai_vs_ai(mancala)
+man_vs_ai(mancala)
+#ai_vs_ai(mancala)
