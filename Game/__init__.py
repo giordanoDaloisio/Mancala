@@ -20,23 +20,36 @@ class MancalaState:
     @property
     def player_points(self):
         if self.no_moves():
-            return sum(self.board[7:14])
+            return sum(self.board[7:13])+self.board[6]
         else:
             return self.board[6]
 
     @property
     def ai_points(self):
         if self.no_moves():
-            return sum(self.board[0:7])
+            return sum(self.board[0:6])+self.board[13]
         else:
             return self.board[13]
 
+    def player_pebbles(self):
+        return sum(self.board[0:6])
+
+    def ai_pebbles(self):
+        return sum(self.board[7:13])
+
     def print(self):
-        print("  ", end="")
-        print(*["%2d" % x for x in reversed(self.board[7:13])], sep="|")
-        print("%2d                  %2d" % (self.ai_points, self.player_points))
-        print("  ", end="")
-        print(*["%2d" % x for x in self.board[0:6]], sep="|")
+        if not self.no_moves():
+            print("  ", end="")
+            print(*["%2d" % x for x in reversed(self.board[7:13])], sep="|")
+            print("%2d                  %2d" % (self.ai_points, self.player_points))
+            print("  ", end="")
+            print(*["%2d" % x for x in self.board[0:6]], sep="|")
+        else:
+            print("  ", end="")
+            print(*["%2d" % 0 for x in reversed(self.board[7:13])], sep="|")
+            print("%2d                  %2d" % (self.ai_points, self.player_points))
+            print("  ", end="")
+            print(*["%2d" % 0 for x in self.board[0:6]], sep="|")
 
     def no_moves(self):
         # check if a player as no more moves
