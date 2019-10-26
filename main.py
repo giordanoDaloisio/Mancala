@@ -7,17 +7,15 @@ MAX = 7
 DOUBLE_TURN_H = h.DoubleTurnHeuristic()
 SINGLE_TURN_H = h.RelativePointsSingleTurnHeuristic()
 SINGLE_TURN_PEBBLES_H = h.RelativePointsAndPebblesSingleTurnHeuristic()
-
+SINGLE_TURN_RIGHT_H = h.RightCellSingleTurnHeuristic()
 
 class DoubleTurn:
 
-    def __init__(self, heuristic):
-        self.heuristic = heuristic
-
-    def minmax(self, state, player, depth=5):
+    def minmax(self, state, player, heuristic, depth=5):
         beststate = None
         if depth == 0 or state.no_moves():
-            return self.heuristic.h(state, player), state
+            print("H Value: %s" % heuristic.h(state, player))
+            return heuristic.h(state, player), state
 
         if player is MAX:
             currval = float('-inf')
@@ -37,7 +35,7 @@ class DoubleTurn:
                     beststate = node
             return currval, beststate
 
-    def man_vs_ai(self, game):
+    def man_vs_ai(self, game, heuristic):
         game.state.print()
         move = choose_move()
         game.make_move(move, MIN)
@@ -45,7 +43,7 @@ class DoubleTurn:
         while not game.no_moves():
             game.state.print()
             if player is MAX:
-                val, move = self.minmax(game.state, player)
+                val, move = self.minmax(game.state, player, heuristic)
                 game.set_state(move)
                 print("Value: "+str(val))
             elif player is MIN:
@@ -60,7 +58,7 @@ class DoubleTurn:
         else:
             print("Hai perso")
 
-    def ai_vs_ai(self, game):
+    def ai_vs_ai(self, game, max_heuristic, min_heuristic):
         game.state.print()
         val, move = self.minmax(game.state, MIN)
         game.state = move
@@ -68,7 +66,10 @@ class DoubleTurn:
         while not game.no_moves():
             print("Value: " + str(val))
             game.state.print()
-            val, move = self.minmax(game.state, player)
+            if player is MAX:
+                val, move = self.minmax(game.state, player, max_heuristic)
+            elif player is MIN:
+                val, move = self.minmax(game.state, player, min_heuristic)
             game.state = move
             player = game.get_next_player()
         game.state.print()
@@ -107,14 +108,14 @@ class SingleTurn:
             return currval, beststate
 
     @staticmethod
-    def alpha_beta(state, player, heuristic, alpha=float('-inf'), beta=float('inf'), depth=15):
+    def alpha_beta(state, player, heuristic, MAX, MIN, alpha=float('-inf'), beta=float('inf'), depth=15):
         beststate = state
         if state.no_moves() or depth == 0:
-            return heuristic.h(state), state
+            return heuristic.h(state, MAX), state
         if player is MAX:
             currval = float('-inf')
             for node in state.neighbors(player):
-                val, state = SingleTurn.alpha_beta(node, MIN, heuristic, alpha, beta, depth - 1)
+                val, state = SingleTurn.alpha_beta(node, MIN, heuristic, MAX, MIN, alpha, beta, depth - 1)
                 alpha = max(alpha, val)
                 if val > currval:
                     currval = val
@@ -125,7 +126,7 @@ class SingleTurn:
         if player is MIN:
             currval = float('inf')
             for node in state.neighbors(player):
-                val, state = SingleTurn.alpha_beta(node, MAX, heuristic, alpha, beta, depth - 1)
+                val, state = SingleTurn.alpha_beta(node, MAX, heuristic, MAX, MIN, alpha, beta, depth - 1)
                 beta = min(beta, val)
                 if val < currval:
                     currval = val
@@ -142,7 +143,7 @@ class SingleTurn:
         while not game.no_moves():
             game.state.print()
             if player is MAX:
-                val, move = self.alpha_beta(game.state, player, heuristic, depth=depth)
+                val, move = self.alpha_beta(game.state, player, heuristic, MAX, MIN, depth=depth)
                 game.set_state(move)
                 print("Value: "+str(val))
                 player = MIN
@@ -158,18 +159,18 @@ class SingleTurn:
         else:
             print("Hai perso")
 
-    def ai_vs_ai(self, game, heuristic_max, heuristic_min, max_depth, min_depth):
+    def ai_vs_ai(self, game, heuristic_1, heuristic_2, max_depth, min_depth):
         game.state.print()
-        val, move = self.alpha_beta(game.state, MIN, heuristic_min, depth=min_depth)
+        val, move = self.alpha_beta(game.state, MIN, heuristic_1, MIN, MAX, depth=min_depth)
         game.state = move
         player = MAX
         while not game.no_moves():
             print("Value: " + str(val))
             game.state.print()
             if player is MAX:
-                val, move = self.alpha_beta(game.state, player, heuristic_max, depth=max_depth)
+                val, move = self.alpha_beta(game.state, player, heuristic_2, MAX, MIN, depth=max_depth)
             elif player is MIN:
-                val, move = self.alpha_beta(game.state, player, heuristic_min, depth=min_depth)
+                val, move = self.alpha_beta(game.state, player, heuristic_1, MIN, MAX, depth=min_depth)
             game.state = move
             if player is MAX:
                 player = MIN
@@ -177,11 +178,11 @@ class SingleTurn:
                 player = MAX
         game.state.print()
         if game.winner():
-            print("Ha vinto MIN")
+            print("Ha vinto 1")
         elif game.draw():
             print("Pareggio")
         else:
-            print("Ha vinto MAX")
+            print("Ha vinto 2")
 
 
 def choose_move():
@@ -205,10 +206,7 @@ board += [0]
 board += [4 for i in range(0, 6)]
 board += [0]
 mancala = MancalaGame(board)
-double_turn_game = DoubleTurn(DOUBLE_TURN_H)
 single_turn_game = SingleTurn()
-#single_turn_game.man_vs_ai(mancala, 6)
-single_turn_game.ai_vs_ai(mancala, SINGLE_TURN_H, SINGLE_TURN_PEBBLES_H, 10, 10)
-#double_turn_game.man_vs_ai(mancala)
+single_turn_game.man_vs_ai(mancala, SINGLE_TURN_RIGHT_H, 5)
 
 
