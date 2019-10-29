@@ -32,9 +32,11 @@ class MancalaState:
             return self.board[13]
 
     def player_pebbles(self):
+        # return the number of pebbles on the player side
         return sum(self.board[0:6])
 
     def ai_pebbles(self):
+        # return the number of pebbles on the ai side
         return sum(self.board[7:13])
 
     def print(self):
@@ -53,7 +55,7 @@ class MancalaState:
 
     def no_moves(self):
         # check if a player as no more moves
-        return any(self.board[0:6]) == 0 or any(self.board[7:13]) == 0
+        return self.player_pebbles() == 0 or self.ai_pebbles() == 0
 
     def make_move(self, cell, player):  # returns a new state corresponding to moving the pots in the <cell> of the
         # <player>
