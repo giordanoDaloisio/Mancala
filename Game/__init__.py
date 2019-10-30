@@ -5,11 +5,10 @@ __author__ = "giordanodaloisio"
 
 class MancalaState:
 
-    # each state is defined by the board, the parent, the player playing next and the points of both the players
-    def __init__(self, board, next_player=None, parent=None):
+    # each state is defined by the board, the parent and the points of both the players
+    def __init__(self, board, parent=None):
         self.board = board
         self.parent = parent
-        self.next_player = next_player
 
     def __str__(self):
         ris = "| "
@@ -75,12 +74,7 @@ class MancalaState:
                         cell = 0
                     new_board[cell] += 1
                     tokens -= 1
-                # check if player has another turn
-                if (player == 0 and cell == 6) or (player == 7 and cell == 13):
-                    next_player = player
-                else:
-                    next_player = 7 - player
-                return MancalaState(new_board, next_player, self)
+                return MancalaState(new_board, self)
 
     def neighbors(self, player):
         out = set([])
@@ -108,10 +102,6 @@ class MancalaGame:
 
     def draw(self):
         return self.state.player_points == self.state.ai_points
-
-    def get_next_player(self):
-        # return the value of the next player
-        return self.state.next_player
 
     def set_state(self, state):
         self.state = state
