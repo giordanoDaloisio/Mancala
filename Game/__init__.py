@@ -56,8 +56,9 @@ class MancalaState:
         # check if a player as no more moves
         return self.player_pebbles() == 0 or self.ai_pebbles() == 0
 
-    def make_move(self, cell, player):  # returns a new state corresponding to moving the pots in the <cell> of the
-        # <player>
+    def make_move(self, cell, player):
+        # returns a new state corresponding to moving the pots in the <cell> of the <player>
+
         # check if cell is between 0 and 5 and player is valid one
         if cell in range(0, 6) and player in (0, 7):
             # compute the value of the cell for player 0 or 7
@@ -105,3 +106,11 @@ class MancalaGame:
 
     def set_state(self, state):
         self.state = state
+
+    def reset(self):
+        # reset the board for a new game
+        board = [4 for i in range(0, 6)]
+        board += [0]
+        board += [4 for i in range(0, 6)]
+        board += [0]
+        self.state = MancalaState(board)
