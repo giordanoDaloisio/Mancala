@@ -43,5 +43,4 @@ class LinearCombinationHeuristic:
         point1 = self.coeff[0] * RelativePointsHeuristic.h(state, player)
         point2 = self.coeff[1] * PebblesHeuristic.h(state, player)
         point3 = self.coeff[2] * RightCellHeuristic.h(state, player)
-        return point1+point2+point3
-
+        return (point1+point2+point3)/sum(self.coeff)

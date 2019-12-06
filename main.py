@@ -4,8 +4,8 @@ from time import time
 import Utils
 import random
 
-MIN = 0
-MAX = 7
+PL1 = 0
+PL2 = 7
 
 HP = H.RelativePointsHeuristic()
 HB = H.PebblesHeuristic()
@@ -14,29 +14,30 @@ HR = H.RightCellHeuristic()
 
 def man_vs_ai(game, heuristic, depth):
     # make you play against an heuristic
+    # PL1 is human, PL2 is AI
     game.state.print()
     move = Utils.choose_move()
-    game.make_move(move, MIN)
-    player = MAX
+    game.make_move(move, PL1)
+    player = PL2
     counter = 0
     while not game.no_moves():
         counter += 1
         # game loop
         game.state.print()
-        if player is MAX:
+        if player is PL2:
             t = time()
             # ai player
-            val, move = Utils.alpha_beta(game.state, player, heuristic, MAX, MIN, depth=depth)
+            val, move = Utils.alpha_beta(game.state, player, heuristic, PL2, PL1, depth=depth)
             game.set_state(move)
             print("AI MOVE")
             print("Value: "+str(val))
             print("Move made in %s seconds" % (time()-t))
-            player = MIN
-        elif player is MIN:
+            player = PL1
+        elif player is PL1:
             # human player
             move = Utils.choose_move()
             game.make_move(move, player)
-            player = MAX
+            player = PL2
 
     game.state.print()
     if game.winner():
@@ -48,26 +49,34 @@ def man_vs_ai(game, heuristic, depth):
     print("Game ended after %s moves" % counter)
 
 
-def ai_vs_ai(game, heuristic_1, heuristic_2, max_depth, min_depth):
+def ai_vs_ai(game, heuristic_1, heuristic_2, pl1_depth, pl2_depth):
     # make two heuristics play against each other
     game.state.print()
-    val, move = Utils.alpha_beta(game.state, MIN, heuristic_1, MIN, MAX, depth=min_depth)
+    # player 1 starts
+    val, move = Utils.alpha_beta(game.state, PL1, heuristic_1, PL1, PL2, depth=pl1_depth)
+    # val, move = Utils.media_max(game.state, PL1, heuristic_1, PL1, PL2, pl1_depth)
     game.state = move
-    player = MAX
+    player = PL2
     start_time = time()
     while not game.no_moves():
         # game loop
         print("Value: " + str(val))
         game.state.print()
-        if player is MAX:
-            val, move = Utils.alpha_beta(game.state, player, heuristic_2, MAX, MIN, depth=max_depth)
-        elif player is MIN:
-            val, move = Utils.alpha_beta(game.state, player, heuristic_1, MIN, MAX, depth=min_depth)
+
+        # each player calls the alpha_beta function like he is the MAX player
+        if player is PL2:
+            val, move = Utils.alpha_beta(game.state, player, heuristic_2, PL2, PL1, depth=pl2_depth)
+            # val, move = Utils.media_max(game.state, player, heuristic_2, PL2, PL1, depth=pl2_depth)
+        elif player is PL1:
+            val, move = Utils.alpha_beta(game.state, player, heuristic_1, PL1, PL2, depth=pl1_depth)
+            # val, move = Utils.media_max(game.state, player, heuristic_1, PL1, PL2, depth=pl1_depth)
+
         game.state = move
-        if player is MAX:
-            player = MIN
-        elif player is MIN:
-            player = MAX
+        if player is PL2:
+            player = PL1
+        elif player is PL1:
+            player = PL2
+
     game.state.print()
     print("Game ended in %s seconds" % (time()-start_time))
     if game.winner():
@@ -85,7 +94,7 @@ def coeff_train(game):
     coeff = [1, 1, 1]
     old_h = H.LinearCombinationHeuristic(coeff)
     pick = random.randint(0, 2)
-    for i in range(0, 10):
+    for i in range(0, 5):
         coeff[pick] += 1
         new_h = H.LinearCombinationHeuristic(coeff)
         pl1_score = 0
@@ -123,4 +132,5 @@ mancala = MancalaGame(board)
 coeff = coeff_train(mancala)
 HL = H.LinearCombinationHeuristic(coeff)
 mancala.reset()
-man_vs_ai(mancala, HL, 3)
+ai_vs_ai(mancala, HP, HL, 3, 3)
+

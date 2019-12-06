@@ -1,26 +1,28 @@
+from statistics import mean
 
-def minmax(state, player, heuristic, min_player, max_player, depth=10):
-    beststate = None
-    if depth == 0 or state.no_moves():
-        return heuristic.h(state), state
 
-    if player is max_player:
-        currval = float('-inf')
-        for node in state.neighbors(max_player):
-            val, state = minmax(node, min_player, heuristic, depth - 1)
-            if val > currval:
-                currval = val
-                beststate = node
-        return currval, beststate
-
-    if player is min_player:
-        currval = float('inf')
-        for node in state.neighbors(min_player):
-            val, state = minmax(node, max_player, heuristic, depth - 1)
-            if val < currval:
-                currval = val
-                beststate = node
-        return currval, beststate
+# def minmax(state, player, heuristic, max_player, min_player, depth=10):
+#     beststate = None
+#     if depth == 0 or state.no_moves():
+#         return heuristic.h(state), state
+#
+#     if player is max_player:
+#         currval = float('-inf')
+#         for node in state.neighbors(max_player):
+#             val, state = minmax(node, min_player, heuristic, depth - 1)
+#             if val > currval:
+#                 currval = val
+#                 beststate = node
+#         return currval, beststate
+#
+#     if player is min_player:
+#         currval = float('inf')
+#         for node in state.neighbors(min_player):
+#             val, state = minmax(node, max_player, heuristic, depth - 1)
+#             if val < currval:
+#                 currval = val
+#                 beststate = node
+#         return currval, beststate
 
 
 def alpha_beta(state, player, heuristic, max_player, min_player, alpha=float('-inf'), beta=float('inf'), depth=15):
@@ -69,3 +71,29 @@ def choose_move():
                 retrying = True
         except ValueError:
             retrying = True
+
+
+def media_max(state, player, heuristic, max_player, min_player, depth=10):
+    beststate = None
+    if depth == 0 or state.no_moves():
+        return heuristic.h(state, max_player), state
+
+    if player is max_player:
+        currval = float('-inf')
+        for node in state.neighbors(max_player):
+            val = mean([media_max(child, min_player, heuristic, min_player, max_player, depth - 1)[0]
+                        for child in node.neighbors(min_player)])
+            if val > currval:
+                currval = val
+                beststate = node
+        return currval, beststate
+
+    if player is min_player:
+        currval = float('inf')
+        for node in state.neighbors(min_player):
+            val = mean([media_max(child, max_player, heuristic, min_player, max_player, depth - 1)[0]
+                        for child in node.neighbors(max_player)])
+            if val < currval:
+                currval = val
+                beststate = node
+        return currval, beststate
