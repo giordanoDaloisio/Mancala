@@ -1,6 +1,6 @@
 from copy import deepcopy
 
-__author__ = "giordanodaloisio"
+__author__ = "GiordanodAloisio"
 
 
 class MancalaState:
@@ -56,6 +56,17 @@ class MancalaState:
         # check if a player as no more moves
         return self.player_pebbles() == 0 or self.ai_pebbles() == 0
 
+    def neighbors(self, player):
+        out = set([])
+        for cell in range(0, 6):
+            new_state = self.__make_move(cell, player)
+            if new_state is not None:
+                out.add(new_state)
+        return out
+
+    def get_state_info(self):
+        return self.board, self.player_points, self.ai_points
+
     def __make_move(self, cell, player):
         # returns a new state corresponding to moving the pots in the <cell> of the <player>
 
@@ -77,14 +88,6 @@ class MancalaState:
                     tokens -= 1
                 return MancalaState(new_board, self)
 
-    def neighbors(self, player):
-        out = set([])
-        for cell in range(0, 6):
-            new_state = self.__make_move(cell, player)
-            if new_state is not None:
-                out.add(new_state)
-        return out
-
 
 class MancalaGame:
 
@@ -94,6 +97,7 @@ class MancalaGame:
     def make_move(self, cell, player):
         new_state = self.state.make_move(cell, player)
         self.state = new_state
+        return self.state.get_state_info()
 
     def no_moves(self):
         return self.state.no_moves()
@@ -106,6 +110,7 @@ class MancalaGame:
 
     def set_state(self, state):
         self.state = state
+        return self.state.get_state_info()
 
     def reset(self):
         # reset the board for a new game
@@ -114,3 +119,5 @@ class MancalaGame:
         board += [4 for i in range(0, 6)]
         board += [0]
         self.state = MancalaState(board)
+        return self.state.get_state_info()
+

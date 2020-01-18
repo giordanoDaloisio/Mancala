@@ -27,8 +27,8 @@ def man_vs_ai(game, heuristic, depth):
         if player is PL2:
             t = time()
             # ai player
-            val, move = Utils.alpha_beta(game.state, player, heuristic, PL2, PL1, depth=depth)
-            game.set_state(move)
+            val, state = Utils.alpha_beta(game.state, player, heuristic, PL2, PL1, depth=depth)
+            game.set_state(state)
             print("AI MOVE")
             print("Value: "+str(val))
             print("Move made in %s seconds" % (time()-t))
@@ -54,9 +54,9 @@ def ai_vs_ai(game, heuristic_1, heuristic_2, pl1_depth, pl2_depth, print_game=Tr
     if print_game:
         game.state.print()
     # player 1 starts
-    val, move = Utils.alpha_beta(game.state, PL1, heuristic_1, PL1, PL2, depth=pl1_depth)
+    val, state = Utils.alpha_beta(game.state, PL1, heuristic_1, PL1, PL2, depth=pl1_depth)
     # val, move = Utils.media_max(game.state, PL1, heuristic_1, PL1, PL2, pl1_depth)
-    game.state = move
+    game.set_state(state)
     player = PL2
     start_time = time()
     while not game.no_moves():
@@ -67,13 +67,13 @@ def ai_vs_ai(game, heuristic_1, heuristic_2, pl1_depth, pl2_depth, print_game=Tr
 
         # each player calls the alpha_beta function like he is the MAX player
         if player is PL2:
-            val, move = Utils.alpha_beta(game.state, player, heuristic_2, PL2, PL1, depth=pl2_depth)
+            val, state = Utils.alpha_beta(game.state, player, heuristic_2, PL2, PL1, depth=pl2_depth)
             # val, move = Utils.media_max(game.state, player, heuristic_2, PL2, PL1, depth=pl2_depth)
         elif player is PL1:
-            val, move = Utils.alpha_beta(game.state, player, heuristic_1, PL1, PL2, depth=pl1_depth)
+            val, state = Utils.alpha_beta(game.state, player, heuristic_1, PL1, PL2, depth=pl1_depth)
             # val, move = Utils.media_max(game.state, player, heuristic_1, PL1, PL2, depth=pl1_depth)
 
-        game.state = move
+        game.set_state(state)
         if player is PL2:
             player = PL1
         elif player is PL1:
