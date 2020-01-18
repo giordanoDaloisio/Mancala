@@ -10,12 +10,6 @@ class MancalaState:
         self.board = board
         self.parent = parent
 
-    def __str__(self):
-        ris = "| "
-        for cell in self.board:
-            ris += str(cell) + " | "
-        return ris
-
     @property
     def player_points(self):
         if self.no_moves():
@@ -29,6 +23,12 @@ class MancalaState:
             return sum(self.board[0:6])+self.board[13]
         else:
             return self.board[13]
+
+    def __str__(self):
+        ris = "| "
+        for cell in self.board:
+            ris += str(cell) + " | "
+        return ris
 
     def player_pebbles(self):
         # return the number of pebbles on the player side
@@ -56,7 +56,7 @@ class MancalaState:
         # check if a player as no more moves
         return self.player_pebbles() == 0 or self.ai_pebbles() == 0
 
-    def make_move(self, cell, player):
+    def __make_move(self, cell, player):
         # returns a new state corresponding to moving the pots in the <cell> of the <player>
 
         # check if cell is between 0 and 5 and player is valid one
@@ -80,7 +80,7 @@ class MancalaState:
     def neighbors(self, player):
         out = set([])
         for cell in range(0, 6):
-            new_state = self.make_move(cell, player)
+            new_state = self.__make_move(cell, player)
             if new_state is not None:
                 out.add(new_state)
         return out

@@ -29,9 +29,9 @@ class RightCellHeuristic:
     def h(state, player):
         # maximize the relative score plus the amount of pebbles on the right most cell of the his side
         if player == 0:
-            return (state.player_points - state.ai_points)*10 + state.board[5]
+            return (state.player_points - state.ai_points) * 10 + state.board[5]
         if player == 7:
-            return (state.ai_points - state.player_points)*10 + state.board[12]
+            return (state.ai_points - state.player_points) * 10 + state.board[12]
 
 
 class LinearCombinationHeuristic:

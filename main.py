@@ -49,9 +49,10 @@ def man_vs_ai(game, heuristic, depth):
     print("Game ended after %s moves" % counter)
 
 
-def ai_vs_ai(game, heuristic_1, heuristic_2, pl1_depth, pl2_depth):
+def ai_vs_ai(game, heuristic_1, heuristic_2, pl1_depth, pl2_depth, print_game=True):
     # make two heuristics play against each other
-    game.state.print()
+    if print_game:
+        game.state.print()
     # player 1 starts
     val, move = Utils.alpha_beta(game.state, PL1, heuristic_1, PL1, PL2, depth=pl1_depth)
     # val, move = Utils.media_max(game.state, PL1, heuristic_1, PL1, PL2, pl1_depth)
@@ -60,8 +61,9 @@ def ai_vs_ai(game, heuristic_1, heuristic_2, pl1_depth, pl2_depth):
     start_time = time()
     while not game.no_moves():
         # game loop
-        print("Value: " + str(val))
-        game.state.print()
+        if print_game:
+            print("Value: " + str(val))
+            game.state.print()
 
         # each player calls the alpha_beta function like he is the MAX player
         if player is PL2:
@@ -76,9 +78,9 @@ def ai_vs_ai(game, heuristic_1, heuristic_2, pl1_depth, pl2_depth):
             player = PL1
         elif player is PL1:
             player = PL2
-
-    game.state.print()
-    print("Game ended in %s seconds" % (time()-start_time))
+    if print_game:
+        game.state.print()
+        print("Game ended in %s seconds" % (time()-start_time))
     if game.winner():
         print("AI 1 wins")
         return 1
@@ -94,16 +96,16 @@ def coeff_train(game):
     coeff = [1, 1, 1]
     old_h = H.LinearCombinationHeuristic(coeff)
     pick = random.randint(0, 2)
-    for i in range(0, 5):
+    for i in range(0, 15):
         coeff[pick] += 1
         new_h = H.LinearCombinationHeuristic(coeff)
         pl1_score = 0
         pl2_score = 0
+        print(coeff)
         print("--------------START GAME LOOP-----------------")
-
         for j in range(0, 10):
             print("----------------PLAY START-----------------")
-            score = ai_vs_ai(game, new_h, old_h, 5, 5)
+            score = ai_vs_ai(game, new_h, old_h, 5, 5, False)
             if score == 1:
                 pl1_score += 1
             elif score == 2:
@@ -112,13 +114,13 @@ def coeff_train(game):
 
         if pl1_score > pl2_score:
             old_h = new_h
+            print("PL1 wins")
         else:
+            print("PL2 wins")
             new_pick = random.randint(0, 2)
             while new_pick == pick:
                 new_pick = random.randint(0, 2)
             pick = new_pick
-        print("------------------NEW LOOP--------------------")
-
     print("--------------END GAME LOOP-------------------")
     print(coeff)
     return coeff
@@ -129,8 +131,8 @@ board += [0]
 board += [4 for j in range(0, 6)]
 board += [0]
 mancala = MancalaGame(board)
-coeff = coeff_train(mancala)
-HL = H.LinearCombinationHeuristic(coeff)
-mancala.reset()
-ai_vs_ai(mancala, HP, HL, 3, 3)
+# coeff = coeff_train(mancala)
+# HL = H.LinearCombinationHeuristic(coeff)
+# mancala.reset()
+ai_vs_ai(mancala, HP, HR, 3, 3)
 
